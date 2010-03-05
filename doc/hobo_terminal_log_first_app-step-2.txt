@@ -1,0 +1,47 @@
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$ script/generate hobo_model_resource category name:string sorder:integer
+      exists  app/models/
+      exists  app/controllers/
+      exists  app/helpers/
+      create  app/views/categories
+      exists  test/functional/
+      exists  test/unit/
+  dependency  hobo_model
+      exists    app/models/
+      exists    test/unit/
+      exists    test/fixtures/
+      exists    app/viewhints
+      create    app/models/category.rb
+      create    app/viewhints/category_hints.rb
+      create    test/unit/category_test.rb
+      create    test/fixtures/categories.yml
+      create  app/controllers/categories_controller.rb
+      create  test/functional/categories_controller_test.rb
+      create  app/helpers/categories_helper.rb
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$ script/generate hobo_migration
+
+---------- Up Migration ----------
+create_table :categories do |t|
+  t.string   :name
+  t.integer  :sorder
+  t.datetime :created_at
+  t.datetime :updated_at
+end
+----------------------------------
+
+---------- Down Migration --------
+drop_table :categories
+----------------------------------
+What now: [g]enerate migration, generate and [m]igrate now or [c]ancel? m
+
+Migration filename:
+(you can type spaces instead of '_' -- every little helps)
+Filename [hobo_migration_1]: create_category    
+      exists  db/migrate
+      create  db/migrate/20100215225837_create_category.rb
+(in /home/frederic/Projects/rails/hobo/MyLibrary)
+==  CreateCategory: migrating =================================================
+-- create_table(:categories)
+   -> 0.0015s
+==  CreateCategory: migrated (0.0016s) ========================================
+
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$

@@ -1,0 +1,224 @@
+Progressing with: 
+paperclip_with_hobo 
+copy this to test1.sh and  then: chmod +x test1.sh 
+#! /bin/sh test1.sh 
+hobo test1 
+cd test1 
+mkdir public/images/photos 
+script/plugin install git://github.com/thoughtbot/paperclip.git 
+script/plugin install git://github.com/tablatom/paperclip_with_hobo.git 
+script/generate hobo_model_resource upload name:string 
+cp ../application.dryml app/views/taglibs/application.dryml 
+cp ../upload.rb app/models/upload.rb 
+script/generate hobo_migration 
+script/server 
+## copy this to  ./application.dryml  into the same directory as 
+test1.sh 
+<include src="rapid" plugin="hobo"/> 
+<include src="taglibs/auto/rapid/cards"/> 
+<include src="taglibs/auto/rapid/pages"/> 
+<include src="taglibs/auto/rapid/forms"/> 
+<include src="paperclip" plugin="paperclip_with_hobo" /> 
+<set-theme name="clean"/> 
+<def tag="app-name">Test1</def> 
+<def tag="input" for="Paperclip::Attachment"> 
+  <%= file_field_tag param_name_for_this, attributes %> 
+</def> 
+<extend tag="form" for="Upload"> 
+<old-form enctype="multipart/form-data" merge> 
+<field-list: fields="name,photo" /> 
+</old-form> 
+</extend> 
+<extend tag="card" for="Upload"> 
+<card> 
+<h5><a /></h5> 
+<p> 
+<a><img src="#{this.photo.url :thumbnail}" /></a> 
+<view:name /> 
+</p> 
+<p> 
+Uploaded:<br /> 
+<view:created_at format="%B %d, %Y" /> by <you:user />. 
+</p> 
+<delete-button class="actions" /> 
+</card> 
+</extend> 
+## copy this to  upload.rb in the same directory as test1.sh 
+class Upload < ActiveRecord::Base 
+  hobo_model # Don't put anything above this 
+  fields do 
+    name :string 
+    timestamps 
+  end 
+has_attached_file :photo, 
+          :styles => { 
+            :original => ["1000x1000", :jpg ], 
+            :medium => ["500x800", :jpg ], 
+            :small => ["300x500", :jpg ], 
+            :thumbnail => ["100x100#", :jpg ] 
+          }, 
+          :default_style => :medium, 
+          :path => "#{RAILS_ROOT}/public/images/ 
+photos/:style/:id_:basename.:extension" 
+  # --- Permissions --- # 
+  def create_permitted? 
+    acting_user.administrator? 
+  end 
+  def update_permitted? 
+    acting_user.administrator? 
+  end 
+  def destroy_permitted? 
+    acting_user.administrator? 
+  end 
+  def view_permitted?(field) 
+    true 
+  end 
+end 
+##### 
+run the shell script: 
+./test1.sh 
+When the script/migrate hobo migration displays the migration 
+question: 
+hit m ( to migrate) 
+The script will then start the server: 
+open a browser: 
+http://localhost:3000/ 
+Create an admin user and password 
+Then go to the Uploads tab 
+and upload a file 
+THEN the following problems still exist: 
+I have made alot of progress in getting the paperclip_with_hobo plugin 
+working: 
+I still have TWO  problems remaining: 
+1. link to thumbnail not correct 
+2. the user who uploads the file not displaying properly. 
+Here is what I am doing so far: 
+hobo test1 
+cd test1 
+mkdir public/images/photos 
+script/plugin install git://github.com/thoughtbot/paperclip.git 
+script/plugin install git://github.com/tablatom/paperclip_with_hobo.git 
+script/generate hobo_model_resource upload name:string 
+###### 
+MODIFIED app/models/upload.rb 
+  end 
+has_attached_file :photo, 
+          :styles => { 
+            :original => ["1000x1000", :jpg ], 
+            :medium => ["500x800", :jpg ], 
+            :small => ["300x500", :jpg ], 
+            :thumbnail => ["100x100#", :jpg ] 
+          }, 
+          :default_style => :medium, 
+          :path => "#{RAILS_ROOT}/public/images/ 
+photos/:style/:id_:basename.:extension" 
+  # --- Permissions --- # 
+###### 
+MODIFIED app/views/taglibs/application.dryml 
+<include src="paperclip" plugin="paperclip_with_hobo" /> 
+<set-theme name="clean"/> 
+<def tag="app-name">Test1</def> 
+<def tag="input" for="Paperclip::Attachment"> 
+  <%= file_field_tag param_name_for_this, attributes %> 
+</def> 
+<extend tag="form" for="Upload"> 
+<old-form enctype="multipart/form-data" merge> 
+<field-list: fields="name,photo" /> 
+</old-form> 
+</extend> 
+<extend tag="card" for="Upload"> 
+<card> 
+<h5><a /></h5> 
+<p> 
+<a><img src="#{this.photo.url :thumbnail}" /></a> 
+<view:name /> 
+</p> 
+<p> 
+Uploaded:<br /> 
+<view:created_at format="%B %d, %Y" /> by <you:user />. 
+</p> 
+<delete-button class="actions" /> 
+</card> 
+</extend> 
+######### 
+Then: 
+script/generate hobo_migration 
+script/server 
+The hobo interface appears, go to the Uploads tab, add an image, and a 
+name for the image file. 
+When the upload completes, click on the Uploads tab 
+PROBLEM 1: 
+There is BROKEN LINK for the thumbnail: 
+<a class="upload-link" href="/uploads/7-yoga-toes"><img src="/system/ 
+photos/7/thumbnail/yoga_toes.jpg?1255017408" /> 
+You can see the <img src="/system/photos/7... 
+should not be src="/system/photos but should be the RAILS_ROOT/images/ 
+photos instead 
+PROBLEM 2: 
+Also: 
+you:users is not displaying the person who uploaded the file 
+properly. 
+The page as it displays: 
+Uploaded: 
+October 08, 2009 by (Not Available). 
+Should be: 
+Uploaded: 
+October 08, 2009 by sanjaya. 
+I cd to the RAILS_ROOT/public/images/photos/ 
+ls public/images/ 
+photos/ 
+medium/  original/  small/  thumbnail/ 
+Inside each directory are the correct files. So imagemagick is doing 
+its thing properly. 
+Possible another problem when I click on the link of the thumbnail, it 
+opens the page with uploaded image, properly displaying the 
+information, but no image is being displayed on the page. 
+Another QUESTION: 
+How do I get the image to display on this page?? 
+The following errors appear from the command line: 
+Rendering rescues/layout (not_found) 
+  SQL (1.5ms)    SELECT name 
+ FROM sqlite_master 
+ WHERE type = 'table' AND NOT name = 'sqlite_sequence' 
+Processing UploadsController#show (for 127.0.0.1 at 2009-10-08 
+14:14:45) [GET] 
+  Parameters: {"id"=>"1-rails"} 
+  User Load (2.1ms)   SELECT * FROM "users" WHERE ("users"."id" = 1) 
+  Upload Load (1.7ms)   SELECT * FROM "uploads" WHERE ("uploads"."id" 
+= 1) 
+  User Load (1.9ms)   SELECT * FROM "users" LIMIT 30 
+Completed in 946ms (View: 908, DB: 7) | 200 OK [http://localhost/ 
+uploads/1-rails] 
+  SQL (1.7ms)    SELECT name 
+ FROM sqlite_master 
+ WHERE type = 'table' AND NOT name = 'sqlite_sequence' 
+Processing UploadsController#index (for 127.0.0.1 at 2009-10-08 
+14:14:51) [GET] 
+  User Load (4.6ms)   SELECT * FROM "users" WHERE ("users"."id" = 1) 
+  Upload Load (3.2ms)   SELECT * FROM "uploads" LIMIT 30 OFFSET 0 
+  User Load (1.4ms)   SELECT * FROM "users" LIMIT 30 
+Completed in 757ms (View: 709, DB: 11) | 200 OK [http://localhost/ 
+uploads] 
+  SQL (3.4ms)    SELECT name 
+ FROM sqlite_master 
+ WHERE type = 'table' AND NOT name = 'sqlite_sequence' 
+Processing ApplicationController#index (for 127.0.0.1 at 2009-10-08 
+14:14:53) [GET] 
+  Parameters: {"1255022061"=>nil} 
+ActionController::RoutingError (No route matches "/system/photos/1/ 
+thumbnail/rails.jpg" with {:method=>:get}): 
+Rendering rescues/layout (not_found) 
+  SQL (2.0ms)    SELECT name 
+ FROM sqlite_master 
+ WHERE type = 'table' AND NOT name = 'sqlite_sequence' 
+Processing UploadsController#show (for 127.0.0.1 at 2009-10-08 
+14:14:57) [GET] 
+  Parameters: {"id"=>"1-rails"} 
+  User Load (1.4ms)   SELECT * FROM "users" WHERE ("users"."id" = 1) 
+  Upload Load (1.7ms)   SELECT * FROM "uploads" WHERE ("uploads"."id" 
+= 1) 
+  User Load (2.1ms)   SELECT * FROM "users" LIMIT 30 
+Completed in 1092ms (View: 1067, DB: 7) | 200 OK [http://localhost/ 
+uploads/1-rails] 
+SO WHERE AM I STILL GOING WRONG? HELP PLEASE. 
+It is close to a recipe, no? 

@@ -1,0 +1,81 @@
+MyLibrary - Step 4, Adding a cover picture
+------------------------------------------
+
+What about adding a picture of our book, in the detail view ?
+
+Stuff Installation
+------------------
+
+First we will need some plugin and some new libs to perform image integration:
+Thanks to xx with the following lines (Ubuntu powa !)
+
+
+ sudo apt-get remove --purge librmagick-ruby-doc librmagick-ruby1.8
+ sudo apt-get install libmagick9-dev ruby1.8-dev
+ sudo gem install rmagick
+
+and we want to install a plugin from github, so we will need the git command:
+
+ sudo apt-get install git-core
+
+Now, we are in front of 2 possibilities:
+
+- using FlexImage, a rails plugin to manager and manipulate images
+- paperclip+papeclip_with_hobo, a more common and well known rails plugin already integrated with hobo. This will be our choice for this tutorial.
+
+Now, we can install the 2 small Rails plugin:
+
+ cd [path_to]/MyLibrary/
+ script/plugin install git://github.com/thoughtbot/paperclip.git
+ script/plugin install http://github.com/tablatom/paperclip_with_hobo
+
+
+Adding a cover to our Book model
+--------------------------------
+Now we have all the needed software (libs, tools and rails plugin) we are able to enhance our library with some cover images.
+
+before using this plugin, just add the following line to your MyLibrary/views/taglibs/application.dryml
+
+ <include src="paperclip" plugin="paperclip_with_hobo"/>
+
+
+Ok, done.
+
+Now, edit the Book model file: app/model/book.rb, and add 'has_attached_file :cover' to the file, just before the previous added "belongs_to" link.
+
+
+class Book < ActiveRecord::Base
+
+  hobo_model # Don't put anything above this
+
+  fields do
+	...
+  end
+  
+  has_attached_file :cover
+
+  belongs_to :category
+	...
+end
+
+As it's done, you can run the paperclip migration generator:
+
+ script/generate paperclip Book cover
+ rake db:migrate
+
+the 4 needed fields to store image file information are now added to the table books in your database.
+(here as we didn't define anything else, we have a SQLite3 database)
+
+you can verify it into the views/taglibs/auto/rapid/forms.dryml auto generated file :
+
+ <def tag="form" for="Book">
+   <form merge param="default">
+     <error-messages param/>
+     <field-list fields="title, author, year, resume, note, cover_file_name, cover_content_type, cover_file_size, cover_updated_at, category" param/>
+     <div param="actions">
+       <submit label="#{ht 'books.actions.save', :default=>['Save']}" param/><or-cancel param="cancel"/>
+     </div>
+   </form>
+ </def>
+
+

@@ -1,0 +1,111 @@
+Ok, we have just created the first step of our library.
+Now we have hundreds of books, maybe we can dispatch all these books in some categories ?
+
+Ok, l'est add categories to our web app "My Library"
+
+ script/generate hobo_model_resource category name:string sorder:integer
+
+And we hjev to update the databse with our new model:
+
+ script/generate hobo_migration
+
+don't forget the 'm' option to run the migration right now !
+
+ok, just for fun, run the application with a 
+
+ script/server
+
+
+browse to http://localhost:3000/ and go to the "Categories" tab..  
+
+1.View the Category tab
+[hobo_07_add_categories]
+
+2.and add a new "Novel" category
+[hobo_08_add_a_category]
+
+yes ok, nothing really new here.  It's working just like Books.
+
+Let's dye into the code:
+
+We are going to add the link between Book and Category, knwoing that a category can have many book, and one book belong to one category.
+
+Open the file book.rb and just after fields declaration, add the following "belongs_to": 
+
+ class Book < ActiveRecord::Base
+
+  hobo_model # Don't put anything above this
+
+  fields do
+    title  :string
+    author :string
+    year   :integer
+    resume :text
+    note   :integer
+    timestamps
+  end
+
+  belongs_to :category
+  ...
+ end
+
+Open now the category.rb and add the small "has_many" property:
+
+ class Category < ActiveRecord::Base
+
+  hobo_model # Don't put anything above this
+
+  fields do
+    name   :string
+    sorder :integer
+    timestamps
+  end
+
+  has_many :books
+  ...
+ end
+
+we have to generate a small migration to add this field into the Book data model.
+
+ script/generate hobo_migration
+
+choose the 'm' option to apply modifications.
+
+and start the server to test !
+
+ script/server
+
+let's browse the Books page
+
+[hobo_09_add_links_category_books]
+
+And choose one of the created book, you can see the new "Category" field at end of page.
+
+Click the "edit book" link and you will be invited to change the value for category wich is currently set with the default "(No category)".
+
+[hobo_10_Link_book_to_category]
+
+ok, back to your code editor and open the file category_hints.rb. and replace all the commented lines by the following single line. 
+
+
+ class CategoryHints < Hobo::ViewHints
+
+   children :books
+
+ end
+
+Telling that Category has Books has children will modify automatically the Category page, showing the number of book attached to a category.
+
+1. What's new in the "Categories" page
+[hobo_11_add_category_hints_books]
+
+2. Let's see the detail of a Category
+[hobo_12_showing_category_details]
+
+3. And on the Book side, a new top/left link appear "<<Novel"
+[hobo_13_book_details_about_category]
+
+you can see that with  very small add to the generated code, you considerably inflect the default behaviour of the application and the links in the model.
+
+Even if model link declaration and manipulation already exists in Rails, Hobo brings the corresponding mechanisms for the UI side.
+

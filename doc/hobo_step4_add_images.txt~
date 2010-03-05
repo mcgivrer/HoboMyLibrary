@@ -1,0 +1,17 @@
+First we will need some plugin and some new libs to perform image integration:
+Thanks to xx with the following lines (Ubuntu powa !)
+
+ sudo apt-get remove --purge librmagick-ruby-doc librmagick-ruby1.8
+ sudo apt-get install libmagick9-dev ruby1.8-dev
+ sudo gem install rmagick
+
+That's all !
+
+Now, we need a small rails plugin named felxImage :
+
+ ./script/plugin install git://github.com/Squeegy/fleximage.git
+
+Ouch!  to hard for a small guy like me !
+
+
+

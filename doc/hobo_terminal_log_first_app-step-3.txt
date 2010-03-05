@@ -1,0 +1,31 @@
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$ script/generate hobo_migration
+
+---------- Up Migration ----------
+add_column :books, :category_id, :integer
+
+add_index :books, [:category_id]
+----------------------------------
+
+---------- Down Migration --------
+remove_column :books, :category_id
+
+remove_index :books, :name => :index_books_on_category_id rescue ActiveRecord::StatementInvalid
+----------------------------------
+What now: [g]enerate migration, generate and [m]igrate now or [c]ancel? m
+
+Migration filename:
+(you can type spaces instead of '_' -- every little helps)
+Filename [hobo_migration_1]: add_links_to_category
+      exists  db/migrate
+      create  db/migrate/20100215234434_add_links_to_category.rb
+(in /home/frederic/Projects/rails/hobo/MyLibrary)
+==  AddLinksToCategory: migrating =============================================
+-- add_column(:books, :category_id, :integer)
+   -> 0.0009s
+-- add_index(:books, [:category_id])
+   -> 0.0003s
+==  AddLinksToCategory: migrated (0.0014s) ====================================
+
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$ script/generate hobo_migration
+undefined method `belong_to' for #<Class:0xb76db674>
+frederic@ubuntu:~/Projects/rails/hobo/MyLibrary$

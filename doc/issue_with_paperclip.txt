@@ -1,0 +1,41 @@
+I've just implement in my small demo test hobo website (a library management tool), and want to add some picture for book cover.
+So I've install paperclip, and paperclip_with_hobo but running the webBrick server I get solme strange path for image embedded images:
+
+My model :
+
+ class Book < ActiveRecord::Base
+
+  hobo_model # Don't put anything above this
+
+  fields do
+    title  :string
+    author :string
+    year   :integer
+    resume :text
+    note   :integer
+    timestamps
+  end
+  
+  has_attached_file :cover, :styles => { 
+  		:full=>"600x600>", 
+  		:medium => "300x300>", 
+  		:thumb => "100x100>", 
+  		:mini => "60x60>" },
+  		:path => "#{RAILS_ROOT}/public/media/books/covers/:id/:style.:extension"
+
+  belongs_to :category
+  ...
+ End
+
+
+
+And in the generated page, with the source inspector, I can read :
+
+  <a class="book-link" href="/books/2-the-da-vinci-code">
+    <img src="/system/covers/2/thumb/DaVinciCode.jpg?1266775825" />
+  </a> 
+
+
+And as You can see, the path is not really the one I have parametered !
+
+Any idea ?

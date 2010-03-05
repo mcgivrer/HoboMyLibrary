@@ -1,0 +1,50 @@
+<include src="rapid" plugin="hobo"/>
+
+<include src="taglibs/auto/rapid/cards"/>
+<include src="taglibs/auto/rapid/pages"/>
+<include src="taglibs/auto/rapid/forms"/>
+
+<include src="paperclip" plugin="paperclip_with_hobo"/>
+
+<set-theme name="clean"/>
+
+<def tag="app-name"><%= I18n.t :app_name %></def>
+
+<extend tag="page">
+  <old-page merge>
+    <footer: param>
+      <p><%=I18n.t :footer_copyright %>
+        <a href="mailto:frederic.delorme@gmail.com" title="#{I18n.t :contact_title}">
+          <%= I18n.t :contact_label %>
+        </a>
+      </p>
+    </footer:>
+  </old-page>
+</extend>
+
+<extend tag="form" for="Book">
+	<old-form merge multipart>
+		<field-list fields="title, author, year, resume, note, cover, category" param/>
+    <div param="actions">
+      <submit label="#{ht 'books.actions.save', :default=>['Save']}" param/><or-cancel param="cancel"/>
+    </div>
+	</old-form>
+</extend>
+
+<extend tag="card" for="Book">
+  <card>
+    <h5><a /></h5>
+    <p><view:title /></p>
+    <p>
+      <a><img src="#{this.cover.url(:thumb)}" /></a>
+      <view:resume />
+    </p>
+    <p>
+      <%= I18n.t :uploaded_label %><br />
+      <view:created_at format="%B %d, %Y" /> by <you:user />.
+    </p>
+    <delete-button class="actions" />
+   
+  </card>
+</extend>
+

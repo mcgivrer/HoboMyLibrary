@@ -1,0 +1,40 @@
+Installation of the framework
+
+ sudo gem install rails
+ sudo gem install hobo
+ sudo apt-get install sqlite3
+ sudo apt-get install libsqlite3-dev
+ sudo gem install sqlite3-ruby
+
+Now we are going to create our first Hobo application
+
+ hobo MyLibrary
+
+focus in the just create app directory
+
+ cd MyLibrary
+
+And now create our first datamodel :  a book modelisation
+
+ script/generate hobo_model_resource book title:string author:string year:integer resume:text note:integer
+
+nos, we are going to create this model persistence into the default sqlite3  database
+
+ script/generate hobo_migration 
+(choose the 'm' option)
+
+Ok, done.  now run the rails server (WebBrick):
+
+ script/server
+
+browser on http://localhost:3000/
+
+
+Look at the title of the application :"My Library" !  Just because we call our project "MyLibrary" (without any space), Hobo kindly titled our welcome page with a beautiful "My Library" in a good old english. 
+
+Identify yourself by creating the first user account which will act as administrator for this new application.
+
+And now start playing with your books collection !
+
+Yes I am impressed to discover how the Hobo dev team has been very careful with all details.
+
